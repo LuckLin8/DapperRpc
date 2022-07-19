@@ -1,0 +1,20 @@
+syntax = "proto3";                                        //proto3版协议
+
+option java_package = "com.dapper.rpc.serializer.proto";               //编译之后的包名
+option java_outer_classname = "PersonFactory";                         //编译后的类名
+
+message Person{
+
+  int32 id = 1;
+  string name = 2;
+  int32 age = 3;
+  Addr addr = 4;
+
+}
+
+message Addr{
+
+  string contry = 1;
+  string city = 2;
+
+}
