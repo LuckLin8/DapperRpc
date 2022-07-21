@@ -10,5 +10,5 @@ public class ZkConstant {
     public static final String ZK_REGISTRY_PATH = "/registry";
     public static final String ZK_DATA_PATH = ZK_REGISTRY_PATH + "/data";
 
-    public static final String ZK_NAMESPACE = "netty-rpc2";
+    public static final String ZK_NAMESPACE = "dapper-rpc";
 }

@@ -22,6 +22,12 @@
             <artifactId>dapper-rpc-common</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>com.dapper.rpc</groupId>
+            <artifactId>dapper-rpc-server</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
 </project>

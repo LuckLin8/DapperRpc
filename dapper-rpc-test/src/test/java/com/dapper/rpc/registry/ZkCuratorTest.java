@@ -6,7 +6,7 @@ import com.dapper.rpc.serializer.protostuff.ProtostuffSerializer;
 import org.junit.Test;
 
 public class ZkCuratorTest {
-    private final CuratorClient client = new CuratorClient("127.0.0.1:2181", 5000);
+    private final CuratorClient client = CuratorClient.getClient("127.0.0.1:2181", 5000);
 
 
     /**

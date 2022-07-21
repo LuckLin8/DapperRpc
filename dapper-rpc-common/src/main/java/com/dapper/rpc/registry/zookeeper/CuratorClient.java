@@ -13,31 +13,44 @@ import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.Watcher;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author bw.lin
  */
 public class CuratorClient {
-    private final CuratorFramework client;
+    private static final AtomicReference<CuratorClient> SINGLETON_CLIENT = new AtomicReference<>();
+    private CuratorFramework client = null;
 
-    public CuratorClient(String connectString, String namespace, int sessionTimeout, int connectionTimeout) {
-        client = CuratorFrameworkFactory.builder().namespace(namespace).connectString(connectString)
-                .sessionTimeoutMs(sessionTimeout).connectionTimeoutMs(connectionTimeout)
-                .retryPolicy(new ExponentialBackoffRetry(1000, 10))
-                .build();
-        client.start();
+    private CuratorClient() {
     }
 
-    public CuratorClient(String connectString, int timeout) {
-        this(connectString, ZkConstant.ZK_NAMESPACE, timeout, timeout);
+    public static CuratorClient getClient(String connectString, int timeout) {
+        return getClient(connectString, ZkConstant.ZK_NAMESPACE, timeout, timeout);
     }
 
-    public CuratorClient(String connectString) {
-        this(connectString, ZkConstant.ZK_NAMESPACE, ZkConstant.ZK_SESSION_TIMEOUT, ZkConstant.ZK_CONNECTION_TIMEOUT);
+    public static CuratorClient getClient(String connectString) {
+       return getClient(connectString, ZkConstant.ZK_NAMESPACE, ZkConstant.ZK_SESSION_TIMEOUT, ZkConstant.ZK_CONNECTION_TIMEOUT);
     }
 
-    public CuratorFramework getClient() {
-        return client;
+    @SuppressWarnings("all")
+    public static CuratorClient getClient(String connectString, String namespace, int sessionTimeout, int connectionTimeout) {
+        CuratorClient curatorClient = null;
+        while (true){
+            curatorClient = SINGLETON_CLIENT.get();
+            if (Objects.nonNull(curatorClient)){
+                return curatorClient;
+            }
+            curatorClient = new CuratorClient();
+            curatorClient.client = CuratorFrameworkFactory.builder().namespace(namespace).connectString(connectString)
+                    .sessionTimeoutMs(sessionTimeout).connectionTimeoutMs(connectionTimeout)
+                    .retryPolicy(new ExponentialBackoffRetry(1000, 10))
+                    .build();
+            curatorClient.client.start();
+            SINGLETON_CLIENT.compareAndSet(null,curatorClient);
+            return SINGLETON_CLIENT.get();
+        }
     }
 
     public void addConnectionStateListener(ConnectionStateListener connectionStateListener) {
